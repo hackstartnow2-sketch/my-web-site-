@@ -338,59 +338,62 @@ footer{padding:60px 5%;border-top:1px solid var(--border);display:flex;flex-wrap
 
 <script>
 let currentTool = 'blog';
-const toolPrompts = {
-  blog: t => `Write a compelling blog post introduction (150 words) about: "${t}". Tone: professional. Keep it engaging and SEO-friendly.`,
-  social: t => `Write 3 viral social media captions for: "${t}". Include relevant hashtags. Make them catchy and shareable.`,
-  email: t => `Write a short sales email (subject line + body, under 100 words) for: "${t}". Make it persuasive and clear.`,
-  product: t => `Write an eCommerce product description (80 words) for: "${t}". Focus on benefits and convince the buyer.`,
-  youtube: t => `Write a YouTube video hook + intro script (150 words) for: "${t}". Make it engaging to keep viewers watching.`,
-  ad: t => `Write 2 Google/Meta ad copies for: "${t}". Each with a headline (max 30 chars) and description (max 90 chars). Make them click-worthy.`
+
+const fakeOutputs = {
+  blog: "AI is transforming content creation by making writing faster, smarter, and more efficient. Generate high-quality blogs in seconds and save time.",
+  social: "🚀 Create viral content with AI!\n#AI #Marketing #Growth\n\n✨ Boost engagement instantly!",
+  email: "Subject: Grow faster with AI 🚀\n\nHi,\n\nUse AI to generate content in seconds and boost productivity.\n\nTry it today!",
+  product: "This product helps you save time and increase productivity with powerful features designed for modern users.",
+  youtube: "Hook: Want to grow faster using AI?\n\nIntro: In this video, discover how AI tools can transform your workflow.",
+  ad: "Headline: Create Content Fast\nDescription: Use AI to generate content instantly!"
 };
 
 function setTab(el, tool) {
   document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   currentTool = tool;
-  const phs = {blog:'Enter a blog topic...',social:'Enter your product or idea...',email:'Enter your offer or product...',product:'Enter your product name...',youtube:'Enter your video topic...',ad:'Enter your product or service...'};
+
+  const phs = {
+    blog:'Enter a blog topic...',
+    social:'Enter your product or idea...',
+    email:'Enter your offer or product...',
+    product:'Enter your product name...',
+    youtube:'Enter your video topic...',
+    ad:'Enter your product or service...'
+  };
+
   document.getElementById('d-topic').placeholder = phs[tool];
   document.getElementById('d-output').classList.remove('show');
   document.getElementById('d-copy-row').style.display = 'none';
 }
 
-async function demoGenerate() {
+function demoGenerate() {
   const topic = document.getElementById('d-topic').value.trim();
-  if (!topic) { document.getElementById('d-topic').focus(); return; }
+  if (!topic) {
+    document.getElementById('d-topic').focus();
+    return;
+  }
+
   const btn = document.getElementById('d-btn');
   const loading = document.getElementById('d-loading');
   const output = document.getElementById('d-output');
   const copyRow = document.getElementById('d-copy-row');
+
   btn.disabled = true;
   btn.textContent = 'Generating...';
   loading.style.display = 'block';
   output.classList.remove('show');
   copyRow.style.display = 'none';
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{role:'user', content: toolPrompts[currentTool](topic)}]
-      })
-    });
-    const data = await resp.json();
-    const text = data.content?.map(c => c.text || '').join('') || 'Something went wrong. Try again.';
-    output.textContent = text;
+
+  setTimeout(() => {
+    output.textContent = fakeOutputs[currentTool];
     output.classList.add('show');
     copyRow.style.display = 'flex';
-  } catch(e) {
-    output.textContent = 'Connection error. Please try again.';
-    output.classList.add('show');
-  }
-  loading.style.display = 'none';
-  btn.disabled = false;
-  btn.textContent = '⚡ Generate with AI';
+
+    loading.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '⚡ Generate with AI';
+  }, 1200);
 }
 
 function copyOutput() {
